@@ -45,11 +45,11 @@ class EtudiantDBAPI(IPersistence):
         self._conn = self.db_manager.get_connection()
         self._cursor = None
 
-    def add(self, etudiant):
+    def add(self, fiche_note):
         """Permet d'insérer des données dans la table module"""  
-        self.req = "INSERT INTO etudiant(nom, prenom, matricule, telephone, adresse, email, date_naissance, lieu_naissance, nationalite, idFiliere, nom_contact, prenom_contact, telephone_contact, email_contact) \
-        values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        self.args = (etudiant.nom, etudiant.prenom, etudiant.matricule, etudiant.telephone, etudiant.adresse, etudiant.email, etudiant.date_naissance, etudiant.lieu_naissance, etudiant.nationalite, etudiant.idFiliere, etudiant.nom_contact, etudiant.prenom_contact, etudiant.telephone_contact, etudiant.email_contact)
+        self.req = "INSERT INTO fiche_note(date, type_evaluation, numero_evaluation, id_etudiant) \
+        values(%s, %s, %s, %s)"
+        self.args = (fiche_note.date, fiche_note.type_evaluation, fiche_note.numero_evaluation, fiche_note.telephone, fiche_note.id_etudiant)
         try:
             self._cursor = self._conn.cursor()
             self._cursor.execute(self.req,self.args)
@@ -60,14 +60,13 @@ class EtudiantDBAPI(IPersistence):
             self._cursor.close()
             self.db_manager.close_connection()
 
-    def edit(self, id, module):
+    def edit(self, id, fiche_note):
         """Permet de modifier des données de la table module """
-        self.req = "UPDATE module SET nom_module = %s, \
-                     volume_horaire = %s,  \
-                     coefficient = %s WHERE id = %s"
+        self.req = "UPDATE fiche_note SET type_evaluation = %s, \
+                     numero_evaluation = %s,  \
+                     WHERE id = %s"
         
-        self.args = (module.nom_module,module.volume_horaire, \
-                        module.coefficient, id)
+        self.args = (fiche_note.type_evaluation,fiche_note.numero_evaluation, id)
         
         try:
             self._cursor = self._conn.cursor()
@@ -80,7 +79,7 @@ class EtudiantDBAPI(IPersistence):
             self.db_manager.close_connection()
     
     def delete(self, id):
-        self.req = "DELETE FROM module WHERE id = %s"
+        self.req = "DELETE FROM fiche_note WHERE id = %s"
         self.args = (id,)
         try:
             self._cursor = self._conn.cursor()
@@ -94,7 +93,7 @@ class EtudiantDBAPI(IPersistence):
 
     def get_by_id(self, id):
         self.etudiant = Etudiant()
-        self.req = "SELECT * from etudiant WHERE id = %s"
+        self.req = "SELECT * from fiche_note WHERE id = %s"
         self.args = (id,)
         try:
             self._cursor = self._conn.cursor()
@@ -115,7 +114,7 @@ class EtudiantDBAPI(IPersistence):
     
     def get_all(self):
         self.all_etudiants = []
-        self.req = "SELECT * from etudiant"
+        self.req = "SELECT * from fiche_note"
         try:
             self._cursor = self._conn.cursor()
             self._cursor.execute(self.req)
