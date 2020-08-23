@@ -14,7 +14,15 @@ from gestion_etudiant.Groupe.models import Groupe
 
 #Gestion Notes Importation
 from gestion_etudiant.Notes.core import NotesServices
-from gestion_etudiant.Notes.models import FicheNote, NoteEtudiant
+from gestion_etudiant.Notes.models import NoteEtudiant
+
+
+#Gestion Notes Importation
+from gestion_etudiant.FicheNotes.core import FicheNotesServices
+from gestion_etudiant.FicheNotes.models import FicheNote
+
+from gestion_etudiant.Prof.core import ProfServices
+from gestion_etudiant.Prof.models import Prof
 
 def menu():
     print("A D M I N I S T R A C T I O N")
@@ -22,8 +30,8 @@ def menu():
     print("2. GESTION DE MODULES")
     print("3. GESTION DES ETUDIANTS")
     print("4. GESTION DES NOTES")
-    print("5. GESTION DES COURS")
-    print("6. GESTION DES PROFESSEURS")
+    print("5. GESTION DES PROFESSEURS")
+    print("6. GESTION DES COURS")
     print("7. QUITTER")
     print()
     
@@ -208,24 +216,87 @@ def menu():
             while True:
                 choix = int(input("Votre choix: "))
                 if choix == 1:
-                    notes = NoteEtudiant()
+                    note = NoteEtudiant()
                     fiche_note = FicheNote()
                     fiche_note.type_evaluation = str(input("Type de  evaluation: "))
                     fiche_note.numero_evaluation = int(input("Numero de  evaluation: "))
-                    notes.id_etudiant = int(input("Id de l'etudiant: "))
-                    notes.id_fiche_note = int(input("Id Fiche Note: "))
-                    notes.note = int(input("Note: "))
-                    notes.remarque = str(input("Remarque: "))
+                    note.id_etudiant = int(input("Id de l'etudiant: "))
+                    note.id_fiche_note = int(input("Id Fiche Note: "))
+                    note.note = int(input("Note: "))
+                    note.remarque = str(input("Remarque: "))
                     fiche_note.id_prof = str(input("Id du prof: "))
                     fiche_note.id_groupe = str(input("Id de groupe: "))
                     fiche_note.id_module = str(input("Id Module: "))
                     fiche_note.date_creation = str(input("Date: "))
-                    note = NotesServices()
-                    #note.add(fiche_note)
-                    note.add(note)
+                    notes = NotesServices()
+                    fiche_notes = FicheNotesServices()
+                    fiche_notes.add(fiche_note)
+                    notes.add(note)
                     
         elif choix == 5:
-            print("je suis la gestion de etudiants")
+            print("G E S T I O N  D E S  P R O F E S S E U R S")
+            print("1. LISTE DES PROFESSEURS")
+            print("2. AJOUTER UN PROFESSEUR")
+            print("3. MODIFIER LES INFORMATIONS D'UN PROFESSEUR")
+            print("4. SUPRIMMER UN PROFESSEUR")
+            print("5. QUITTER")
+            print()
+            while True:
+                choix = int(input("votre choix: "))
+                if choix == 1:
+                    list_prof = ProfServices()
+                    profs = list_prof.get_all()
+                    print("============================= Professeurs ==============================|")
+                    print("id  Matricule |  Nom  |  Prenom    |   Telephone  |  Adresse ")
+                    print("----------------------------------------------------------------------|")
+                    for prof in profs:
+        
+                        print(prof[0], prof[1], "|", prof[2], "|", prof[3],"|", prof[4], "|", prof[5])
+                        print("======================================================================|")
+
+                elif choix == 2:
+                    
+                    prof = Prof()
+                    prof.id = 1
+                    prof.matricule = str(input("Matricule: "))
+                    prof.prenom = str(input("Prenom: "))
+                    prof.nom = str(input("Nom: "))
+                    prof.telephone = str(input("Telephone: "))
+                    prof.adresse = str(input("Adresse: "))
+                    prof.email = str(input("Email: "))
+                    prof.date_naissance = str(input("Date Naissance: "))
+                    prof.lieu_naissance = str(input("Lieu de Naissance: "))
+                    prof.nationalite = str(input("Nationalite: "))
+                    prof.specialite = str(input("Specialite: "))
+                    
+                    prof_service = ProfServices()
+                    prof_service.add(prof)
+                    
+                elif choix == 3:
+                    prof = Prof()
+                    prof_service = ProfServices()
+                    prof.nom = str(input("Nom prof: "))
+                    prof.prenom = str(input("Prenom prof: "))
+                    prof.telephone = str(input("Telephone: "))
+                    prof_service.edit(2, prof)
+                elif choix == 4:
+                    list_prof = ProfServices()
+                    profs = list_prof.get_all()
+                    print("============================= Professeurs ==============================|")
+                    print("id  Matricule |  Nom  |  Prenom    |   Telephone  |  Adresse ")
+                    print("----------------------------------------------------------------------|")
+                    for prof in profs:
+        
+                        print(prof[0], prof[1], "|", prof[2], "|", prof[3],"|", prof[4], "|", prof[5])
+                        print("======================================================================|")
+                        
+                    id_prof = int(input("Suprimer un etudiant par son id: "))
+                    list_prof.delete(id_prof)  
+                elif choix == 5:
+                    print("Vous avez choisi quitter le programme")
+                    sys.exit()  
+                else:
+                    print("choix inconue")
         elif choix == 6:
             print("je suis la gestion de professeurs")
         elif choix == 7:

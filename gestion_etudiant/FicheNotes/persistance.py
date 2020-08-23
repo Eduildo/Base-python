@@ -7,7 +7,8 @@ from abc import ABC, abstractmethod
 from mysql.connector import Error
 
 from gestion_etudiant.services.database import DatabaseManager
-from gestion_etudiant.Prof.models import Prof
+from gestion_etudiant.FicheNotes.models import FicheNote
+
 
 
 
@@ -34,7 +35,7 @@ class IPersistence(ABC):
         pass
 
 
-class ProfDBAPI(IPersistence):
+class FicheNotesDBAPI(IPersistence):
     """
     Cette classe sert d'interface pour 
     la mannipulation de la base par le module core
@@ -45,11 +46,25 @@ class ProfDBAPI(IPersistence):
         self._conn = self.db_manager.get_connection()
         self._cursor = None
 
-    def add(self, prof):
+    def add(self, fiche_note):
         """Permet d'insérer des données dans la table module"""  
-        self.req = "INSERT INTO prof(matricule, nom, prenom, telephone, adresse, email, date_naissance, lieu_naissance, nationalite, specialite) \
-        values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        self.args = (prof.matricule, prof.nom, prof.prenom, prof.telephone, prof.adresse, prof.email, prof.date_naissance, prof.lieu_naissance, prof.nationalite, prof.specialite)
+        self.req = "INSERT INTO fiche_note(date, type_evaluation, numero_evaluation, id_prof, id_groupe, id_module) \
+        values(%s, %s, %s, %s, %s, %s)"
+        self.args = (fiche_note.date_creation, fiche_note.type_evaluation, fiche_note.numero_evaluation, fiche_note.id_prof, fiche_note.id_groupe, fiche_note.id_module)
+        try:
+            self._cursor = self._conn.cursor()
+            self._cursor.execute(self.req,self.args)
+            self._conn.commit()
+        except Error as error:
+            print(f"Problème sur l'insertion dans la base: {error}")
+        finally:
+            self._cursor.close()
+            self.db_manager.close_connection()
+            
+    def add_note(self, note):
+        """Permet d'insérer des données dans la table module"""  
+        
+        print(self.args)
         try:
             self._cursor = self._conn.cursor()
             self._cursor.execute(self.req,self.args)
@@ -60,14 +75,13 @@ class ProfDBAPI(IPersistence):
             self._cursor.close()
             self.db_manager.close_connection()
 
-    def edit(self, id, prof):
+    def edit(self, id, fiche_note):
         """Permet de modifier des données de la table module """
-        self.req = "UPDATE prof SET nom = %s, \
-                     prenom = %s,  \
-                     telephone = %s WHERE id = %s"
+        self.req = "UPDATE fiche_note SET type_evaluation = %s, \
+                     numero_evaluation = %s,  \
+                     WHERE id = %s"
         
-        self.args = (prof.nom,prof.prenom, \
-                        prof.telephone, id)
+        self.args = (fiche_note.type_evaluation,fiche_note.numero_evaluation, id)
         
         try:
             self._cursor = self._conn.cursor()
@@ -80,7 +94,7 @@ class ProfDBAPI(IPersistence):
             self.db_manager.close_connection()
     
     def delete(self, id):
-        self.req = "DELETE FROM prof WHERE id = %s"
+        self.req = "DELETE FROM fiche_note WHERE id = %s"
         self.args = (id,)
         try:
             self._cursor = self._conn.cursor()
@@ -93,43 +107,41 @@ class ProfDBAPI(IPersistence):
             self.db_manager.close_connection()
 
     def get_by_id(self, id):
-        self.prof = Prof()
-        self.req = "SELECT * from prof WHERE id = %s"
+        self.etudiant = FicheNote()
+        self.req = "SELECT * from note WHERE id_etudiant = %s"
         self.args = (id,)
         try:
             self._cursor = self._conn.cursor()
             self._cursor.execute(self.req, self.args)
             self.ligne = self._cursor.fetchone()
             if(self.ligne):
-                self.prof.id = self.ligne[0]
-                self.prof.matricule = self.ligne[1]
-                self.prof.nom = self.ligne[2]
-                self.prof.prenom = self.ligne[3]
-                self.prof.email = self.ligne[4]
-                self.prof.specialite = self.ligne[5]
+                self.etudiant.id = self.ligne[0]
+                self.etudiant.nom_etudiant = self.ligne[1]
+                self.etudiant.volume_horaire = self.ligne[2]
+                self.etudiant.coefficient = self.ligne[3]
         except Error as error:
             print(f"Problème de la sélection dans la base: {error}")
         finally:
             self._cursor.close()
             self.db_manager.close_connection()
 
-        return self.prof
+        return self.etudiant
     
     def get_all(self):
-        self.all_professeurs = []
-        self.req = "SELECT * from prof"
+        self.all_etudiants = []
+        self.req = "SELECT * from fiche_note"
         try:
             self._cursor = self._conn.cursor()
             self._cursor.execute(self.req)
             self.lignes = self._cursor.fetchall()
             if(self.lignes):
-               self.all_professeurs = self.lignes
+               self.all_etudiants = self.lignes
         except Error as error:
             print(f"Problème de la sélection dans la base: {error}")
         finally:
             self._cursor.close()
             self.db_manager.close_connection()
         
-        return self.all_professeurs
+        return self.all_etudiants
 
 

@@ -51,5 +51,3 @@ class EtudiantServices(IServices):
     def get_all(self):
         return self._etudiant_dbapi.get_all()
             
-        
-        

@@ -7,7 +7,6 @@ from abc import ABC, abstractmethod
 from mysql.connector import Error
 
 from gestion_etudiant.services.database import DatabaseManager
-from gestion_etudiant.Notes.models import FicheNote
 from gestion_etudiant.Notes.models import NoteEtudiant
 
 
@@ -16,10 +15,6 @@ from gestion_etudiant.Notes.models import NoteEtudiant
 class IPersistence(ABC): 
     @abstractmethod
     def add(self, data):  
-        pass
-    
-    @abstractmethod
-    def add_note(self, data):  
         pass
 
     @abstractmethod
@@ -50,11 +45,11 @@ class NotesDBAPI(IPersistence):
         self._conn = self.db_manager.get_connection()
         self._cursor = None
 
-    def add(self, fiche_note):
+    def add(self, note):
         """Permet d'insérer des données dans la table module"""  
-        self.req = "INSERT INTO fiche_note(date, type_evaluation, numero_evaluation, id_prof, id_groupe, id_module) \
-        values(%s, %s, %s, %s, %s, %s)"
-        self.args = (fiche_note.date_creation, fiche_note.type_evaluation, fiche_note.numero_evaluation, fiche_note.id_prof, fiche_note.id_groupe, fiche_note.id_module)
+        self.req = "INSERT INTO note(id_etudiant, id_fiche_note, note, remarque) \
+        values(%s, %s, %s, %s)"
+        self.args = (note.id_etudiant, note.id_fiche_note, note.note, note.remarque)
         try:
             self._cursor = self._conn.cursor()
             self._cursor.execute(self.req,self.args)
@@ -65,21 +60,6 @@ class NotesDBAPI(IPersistence):
             self._cursor.close()
             self.db_manager.close_connection()
             
-    def add_note(self, note):
-        """Permet d'insérer des données dans la table module"""  
-        self.req = "INSERT INTO note(id_etudiant, id_fiche_note, note, remarque) \
-        values(%s, %s, %s, %s)"
-        self.args = (note.id_etudiant, note.id_fiche_note, note.note, note.remarque)
-        print(self.args)
-        try:
-            self._cursor = self._conn.cursor()
-            self._cursor.execute(self.req,self.args)
-            self._conn.commit()
-        except Error as error:
-            print(f"Problème sur l'insertion dans la base: {error}")
-        finally:
-            self._cursor.close()
-            self.db_manager.close_connection()
 
     def edit(self, id, fiche_note):
         """Permet de modifier des données de la table module """

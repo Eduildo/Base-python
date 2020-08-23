@@ -4,7 +4,7 @@ La logique de l'application
 
 from abc import ABC, abstractmethod
 
-from gestion_etudiant.Notes.persistance import NotesDBAPI
+from gestion_etudiant.FicheNotes.persistance import FicheNotesDBAPI
 
 class IServices(ABC):
 
@@ -29,27 +29,27 @@ class IServices(ABC):
         pass
 
 
-class NotesServices(IServices):
+class FicheNotesServices(IServices):
     """Les services de gestion des Modules"""
 
     def __init__(self):
-        self._note_dbapi = NotesDBAPI()
+        self._fiche_note_dbapi = FicheNotesDBAPI()
 
     def add(self, note):
         """Permet de créer un nouveau note dans la base"""
-        self._note_dbapi.add(note)
+        self._fiche_note_dbapi.add(note)
     
     def edit(self, id, note):
-        self._note_dbapi.edit(id, note)
+        self._fiche_note_dbapi.edit(id, note)
 
     def delete(self, id):
-        self._note_dbapi.delete(id)
+        self._fiche_note_dbapi.delete(id)
     
     def get_by_id(self, id):
-        return self._note_dbapi.get_by_id(id)
+        return self._fiche_note_dbapi.get_by_id(id)
     
     def get_all(self):
-        return self._note_dbapi.get_all()
+        return self._fiche_note_dbapi.get_all()
             
         
         
