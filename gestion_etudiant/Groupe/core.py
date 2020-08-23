@@ -30,7 +30,7 @@ class IServices(ABC):
 
 
 class GroupeServices(IServices):
-    """Les services de gestion des Modules"""
+    """Les services de gestion de Groupe"""
 
     def __init__(self):
         self._groupe_dbapi = GroupeDBAPI()

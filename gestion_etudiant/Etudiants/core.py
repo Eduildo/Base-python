@@ -30,17 +30,17 @@ class IServices(ABC):
 
 
 class EtudiantServices(IServices):
-    """Les services de gestion des Modules"""
+    """Les services de gestion des etudiants"""
 
     def __init__(self):
         self._etudiant_dbapi = EtudiantDBAPI()
 
-    def add(self, module):
-        """Permet de créer un nouveau module dans la base"""
-        self._etudiant_dbapi.add(module)
+    def add(self, etudiant):
+        """Permet de créer un nouveau etudiant dans la base"""
+        self._etudiant_dbapi.add(etudiant)
     
-    def edit(self, id, module):
-        self._etudiant_dbapi.edit(id, module)
+    def edit(self, id, etudiant):
+        self._etudiant_dbapi.edit(id, etudiant)
 
     def delete(self, id):
         self._etudiant_dbapi.delete(id)

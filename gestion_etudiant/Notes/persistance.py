@@ -7,7 +7,8 @@ from abc import ABC, abstractmethod
 from mysql.connector import Error
 
 from gestion_etudiant.services.database import DatabaseManager
-from gestion_etudiant.Etudiants.models import Etudiant
+from gestion_etudiant.Notes.models import FicheNote
+from gestion_etudiant.Notes.models import NoteEtudiant
 
 
 
@@ -15,6 +16,10 @@ from gestion_etudiant.Etudiants.models import Etudiant
 class IPersistence(ABC): 
     @abstractmethod
     def add(self, data):  
+        pass
+    
+    @abstractmethod
+    def add_note(self, data):  
         pass
 
     @abstractmethod
@@ -34,7 +39,7 @@ class IPersistence(ABC):
         pass
 
 
-class EtudiantDBAPI(IPersistence):
+class NotesDBAPI(IPersistence):
     """
     Cette classe sert d'interface pour 
     la mannipulation de la base par le module core
@@ -47,9 +52,25 @@ class EtudiantDBAPI(IPersistence):
 
     def add(self, fiche_note):
         """Permet d'insérer des données dans la table module"""  
-        self.req = "INSERT INTO fiche_note(date, type_evaluation, numero_evaluation, id_etudiant) \
+        self.req = "INSERT INTO fiche_note(date, type_evaluation, numero_evaluation, id_prof, id_groupe, id_module) \
+        values(%s, %s, %s, %s, %s, %s)"
+        self.args = (fiche_note.date_creation, fiche_note.type_evaluation, fiche_note.numero_evaluation, fiche_note.id_prof, fiche_note.id_groupe, fiche_note.id_module)
+        try:
+            self._cursor = self._conn.cursor()
+            self._cursor.execute(self.req,self.args)
+            self._conn.commit()
+        except Error as error:
+            print(f"Problème sur l'insertion dans la base: {error}")
+        finally:
+            self._cursor.close()
+            self.db_manager.close_connection()
+            
+    def add_note(self, note):
+        """Permet d'insérer des données dans la table module"""  
+        self.req = "INSERT INTO note(id_etudiant, id_fiche_note, note, remarque) \
         values(%s, %s, %s, %s)"
-        self.args = (fiche_note.date, fiche_note.type_evaluation, fiche_note.numero_evaluation, fiche_note.telephone, fiche_note.id_etudiant)
+        self.args = (note.id_etudiant, note.id_fiche_note, note.note, note.remarque)
+        print(self.args)
         try:
             self._cursor = self._conn.cursor()
             self._cursor.execute(self.req,self.args)
@@ -92,8 +113,8 @@ class EtudiantDBAPI(IPersistence):
             self.db_manager.close_connection()
 
     def get_by_id(self, id):
-        self.etudiant = Etudiant()
-        self.req = "SELECT * from fiche_note WHERE id = %s"
+        self.etudiant = NoteEtudiant()
+        self.req = "SELECT * from note WHERE id_etudiant = %s"
         self.args = (id,)
         try:
             self._cursor = self._conn.cursor()

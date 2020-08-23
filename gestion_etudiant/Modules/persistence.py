@@ -80,8 +80,8 @@ class ModuleDBAPI(IPersistence):
             self.db_manager.close_connection()
     
     def delete(self, id):
-        self.req = "DELETE FROM module WHERE id = %s"
-        self.args = (id,)
+        self.req = "DELETE FROM module WHERE module.id = %s"
+        self.args = (id)
         try:
             self._cursor = self._conn.cursor()
             self._cursor.execute(self.req,self.args)

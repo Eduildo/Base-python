@@ -12,13 +12,17 @@ from gestion_etudiant.Modules.models import Module
 from gestion_etudiant.Groupe.core import GroupeServices
 from gestion_etudiant.Groupe.models import Groupe
 
+#Gestion Notes Importation
+from gestion_etudiant.Notes.core import NotesServices
+from gestion_etudiant.Notes.models import FicheNote, NoteEtudiant
+
 def menu():
     print("A D M I N I S T R A C T I O N")
     print("1. GESTION DE GROUPES")
     print("2. GESTION DE MODULES")
-    print("3. GESTION DES COURS")
+    print("3. GESTION DES ETUDIANTS")
     print("4. GESTION DES NOTES")
-    print("5. GESTION DES ETUDIANTS")
+    print("5. GESTION DES COURS")
     print("6. GESTION DES PROFESSEURS")
     print("7. QUITTER")
     print()
@@ -60,8 +64,14 @@ def menu():
                     groupe.id_filiere = id_filiere
                     groupe.date_creation = date_creation
                     gp_service.add(groupe)
-                    
                 elif choix == 4:
+                    groupe = Groupe()
+                    gp_service = GroupeServices()
+                    groupe.nom_groupe = str(input("nom_groupe: "))
+                    groupe.id_filiere = int(input("id_filiere: "))
+                    groupe.id = 1
+                    gp_service.edit(groupe.id, groupe)   
+                elif choix == 5:
                     print("Vous avez choisis quitter le programme")
                     sys.exit()
                 else:
@@ -81,7 +91,7 @@ def menu():
                     md_service = ModuleServices()
                     liste_module = md_service.get_all()
                     for i in  liste_module:
-                        print(i)
+                        print(i[1], i[2])
                         
                 elif choix == 2:
                     md_service = ModuleServices()
@@ -95,8 +105,27 @@ def menu():
                     module.coefficient = coefficient
                     md_service.add(module)
                 elif choix == 3:
-                    print("a developer")
+                    module = Module()
+                    md_service = ModuleServices()
+                    module.nom_module = str(input("nom_module: "))
+                    module.volume_horaire = int(input("Volume Horaire: "))
+                    module.coefficient = int(input("Coefficient"))
+                    md_service.edit(12, module)
                 elif choix == 4:
+                    md_service = ModuleServices()
+                    liste_module = md_service.get_all()
+                    for i in  liste_module:
+                        print(i)
+                elif choix == 5:
+                    md_service = ModuleServices()
+                    liste_module = md_service.get_all()
+                    for i in  liste_module:
+                        print(i)
+                    print("=======================================")
+                    id_module = int(input("Veuillez saisir l'id du module a supprimer: "))
+                    md_service.delete(id_module)
+                    
+                elif choix == 6:
                     print("Vous avez choisis quitter le programme")
                     sys.exit()
                 else:
@@ -109,9 +138,8 @@ def menu():
             print("1. LISTE DES EUDIANTS")
             print("2. AJOUTER UN ETUDIANT")
             print("3. MODIFIER LES INFORMATIONS D'UN ETUDIANT")
-            print("4. INFORMATION D'UN ETUDIANT")
-            print("5. SUPRIMMER UN ETUDIANT")
-            print("6. QUITTER")
+            print("4. SUPRIMMER UN ETUDIANT")
+            print("5. QUITTER")
             print()
             while True:
                 choix = int(input("votre choix: "))
@@ -127,16 +155,75 @@ def menu():
                         print("======================================================================|")
 
                 elif choix == 2:
-                    print("a developer")
+                    etudiant = Etudiant()
+                    etudiant.id = 2
+                    etudiant.matricule = str(input("Matricule: "))
+                    etudiant.prenom = str(input("Prenom: "))
+                    etudiant.nom = str(input("Nom: "))
+                    etudiant.telephone = str(input("Telephone: "))
+                    etudiant.adresse = str(input("Adresse: "))
+                    etudiant.email = str(input("Email: "))
+                    etudiant.date_naissance = str(input("Date Naissance: "))
+                    etudiant.lieu_naissance = str(input("Lieu de Naissance: "))
+                    etudiant.nationalite = str(input("Nationalite: "))
+                    etudiant.idFiliere = 2
+                    etudiant.prenom_contact = str(input("Prenom Contact: "))
+                    etudiant.nom_contact = str(input("Nom Contact: "))
+                    etudiant.telephone_contact = str(input("Telephone Contact: "))
+                    etudiant.email_contact = str(input("Email Contact: "))
+                    etudiant_services = EtudiantServices()
+                    etudiant_services.add(etudiant)
                 elif choix == 3:
-                    print("a developer")
+                    etudiant = Etudiant()
+                    et_service = EtudiantServices()
+                    etudiant.nom = str(input("Nom etudiant: "))
+                    etudiant.prenom = str(input("Prenom Etudiant: "))
+                    etudiant.telephone = str(input("Telephone: "))
+                    etudiant.email = str(input("Email: "))
+                    et_service.edit(2, etudiant)
                 elif choix == 4:
-                    print("Vous avez choisis quitter le programme")
-                    sys.exit()
+                    list_etudiant = EtudiantServices()
+                    etudiants = list_etudiant.get_all()
+                    print("============================= Etudiants ==============================|")
+                    print("id  Matricule |  Nom  |  Prenom    |   Telephone  |  Adresse ")
+                    print("----------------------------------------------------------------------|")
+                    for etudiant in etudiants:
+        
+                        print(etudiant[0], etudiant[1], "|", etudiant[2], "|", etudiant[3],"|", etudiant[4], "|", etudiant[5])
+                        print("======================================================================|")
+                        
+                    id_etudiant = int(input("Suprimer un etudiant par son id: "))
+                    list_etudiant.delete(id_etudiant)  
+                elif choix == 5:
+                    print("Vous avez choisi quitter le programme")
+                    sys.exit()  
                 else:
                     print("choix inconue")
         elif choix == 4:
-            print("je suis la gestion de notes")
+            print("G E S T I O N  D E S  NOTES")
+            print("1. LANCER LES NOTES")
+            print("2. MODIFIER LES NOTES")
+            print("3. QUITTER")
+            print()
+            while True:
+                choix = int(input("Votre choix: "))
+                if choix == 1:
+                    notes = NoteEtudiant()
+                    fiche_note = FicheNote()
+                    fiche_note.type_evaluation = str(input("Type de  evaluation: "))
+                    fiche_note.numero_evaluation = int(input("Numero de  evaluation: "))
+                    notes.id_etudiant = int(input("Id de l'etudiant: "))
+                    notes.id_fiche_note = int(input("Id Fiche Note: "))
+                    notes.note = int(input("Note: "))
+                    notes.remarque = str(input("Remarque: "))
+                    fiche_note.id_prof = str(input("Id du prof: "))
+                    fiche_note.id_groupe = str(input("Id de groupe: "))
+                    fiche_note.id_module = str(input("Id Module: "))
+                    fiche_note.date_creation = str(input("Date: "))
+                    note = NotesServices()
+                    #note.add(fiche_note)
+                    note.add(note)
+                    
         elif choix == 5:
             print("je suis la gestion de etudiants")
         elif choix == 6:

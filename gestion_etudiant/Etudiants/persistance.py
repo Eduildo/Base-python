@@ -22,7 +22,7 @@ class IPersistence(ABC):
         pass
 
     @abstractmethod
-    def delete(self, data):
+    def delete(self, id):
         pass
 
     @abstractmethod
@@ -60,14 +60,14 @@ class EtudiantDBAPI(IPersistence):
             self._cursor.close()
             self.db_manager.close_connection()
 
-    def edit(self, id, module):
+    def edit(self, id, etudiant):
         """Permet de modifier des données de la table module """
-        self.req = "UPDATE etudiant SET nom_module = %s, \
-                     volume_horaire = %s,  \
-                     coefficient = %s WHERE id = %s"
+        self.req = "UPDATE etudiant SET nom = %s, \
+                     prenom = %s,  \
+                     telephone = %s, email = %s WHERE id = %s"
         
-        self.args = (module.nom_module,module.volume_horaire, \
-                        module.coefficient, id)
+        self.args = (etudiant.nom,etudiant.prenom, \
+                        etudiant.telephone,etudiant.email, id)
         
         try:
             self._cursor = self._conn.cursor()
@@ -80,7 +80,7 @@ class EtudiantDBAPI(IPersistence):
             self.db_manager.close_connection()
     
     def delete(self, id):
-        self.req = "DELETE FROM etudiant WHERE id = %s"
+        self.req = "DELETE FROM etudiant WHERE id = %s "
         self.args = (id,)
         try:
             self._cursor = self._conn.cursor()
